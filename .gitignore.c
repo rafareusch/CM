@@ -45,14 +45,12 @@ int gera_bombas(struct celula *tabuleiro, int lado, int num_bombas, int semente)
 	while(bomb != num_bombas){	
 		x = rand()%(lado-1);
 		y = rand()%(lado-1);
-		
-		
-			if (tabuleiro[x*lado + y].valor != -1)
+			
+		if (tabuleiro[x*lado + y].valor != -1)
 		{
 			tabuleiro[x*lado + y].valor = -1;
 			bomb++;
 		}
-		
 	}	
 	
 }
@@ -60,7 +58,12 @@ int gera_bombas(struct celula *tabuleiro, int lado, int num_bombas, int semente)
 //Essa função imprime o tabuleiro, mostrando apenas os caracteres de impressão para o jogador
 // Ela recebe por parâmetro a referência para o tabuleiro e o tamanho do lado do tabuleiro
 int imprime_tabuleiro(struct celula *tabuleiro, int lado){
-	
+ 	int i,n;
+ 	for (i=0;i<lado;i++){
+	 	for (n=0; n<lado;n++)
+				 printf(" %c ", tabuleiro[i*lado + n].imprime);
+ 	printf("\n");
+	}		
 }
 
 
@@ -96,7 +99,7 @@ int main (int argc, char *argv[])
 	//Nome do jogador
 	char jogador[20];
 	//Para controle de laços
-	int i;
+	int i,n;
 
 	//Escreva aqui um trecho de código para verificar a consistência de dados de entrada do programa (argc e argv)
 	if (argc!=4 	||	 lado_tabuleiro < 2 	|| 	lado_tabuleiro*lado_tabuleiro < num_bombas){
@@ -104,21 +107,24 @@ int main (int argc, char *argv[])
 		return 0;
 	}
 	
-	
 	//Escreva aqui um trecho de código para inicializar as variáveis do jogo
-		
 	
 	//Escreva aqui um trecho de código para inicialização do tabuleiro e alocação de espaço em memória (usar malloc)
 	tabuleiro = (struct celula*)malloc(sizeof(struct celula)*lado_tabuleiro*lado_tabuleiro);
-	
+
+	for (i=0;i<lado_tabuleiro;i++)
+		for (n=0; n<lado_tabuleiro;n++)
+ 			 tabuleiro[i*lado_tabuleiro + n].imprime = 35;
+ 			 
+	imprime_tabuleiro(tabuleiro,lado_tabuleiro);				 
 	//Aqui as bombas devem ser criadas no tabuleiro e os valores de controle de todas células devem ser calculados
 	srand(time(NULL));
 	semente=rand()%666;
 	gera_bombas(tabuleiro,lado_tabuleiro,num_bombas,semente);
 	
 	//Escreva aqui um trecho de código para controle de rodadas do jogo
-
-
-	//Escreva aqui um trecho de código para finalizar o jogo
 	
+	//Escreva aqui um trecho de código para finalizar o jogo
+
+	return 0;
 }
