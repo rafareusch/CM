@@ -1,8 +1,3 @@
-/* 
-LAPRO I - PUCRS
-Estrutura básica para o desenvolvimento de um jogo de campo minado
-Matheus Moreira - matheus.moreira@pucrs.br
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
