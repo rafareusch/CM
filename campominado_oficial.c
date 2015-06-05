@@ -107,22 +107,53 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
 
 void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 
-    int aux_x,aux_y;
-		aux_x = x-1; aux_y = y;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
-                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+        int aux_x,aux_y,t1=0,t2=0,t3=0,t4=0;
 
-        aux_x = x+1; aux_y = y;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
-                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+        if (tabuleiro[x*lado + y].valor != 0)
+            le_vizinho(x,y,tabuleiro,lado);
+        else {
+            aux_x = x-1; aux_y = y;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+                t1++;
+                t3++;
+            }
+            aux_x = x+1; aux_y = y;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+                t4++;
+                t2++;
+            }
+            aux_x = x; aux_y = y+1;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+                t3++;
+                t4++;
+            }
 
-        aux_x = x; aux_y = y+1;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
-                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
-
-        aux_x = x; aux_y = y-1;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
-                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+            aux_x = x; aux_y = y-1;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+                t1++;
+                t2++;
+            }
+            if (t1 == 2){
+                aux_x = x-1; aux_y = y-1;
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+            }
+            if (t2 == 2){
+                aux_x = x+1; aux_y = y-1;
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+            }
+            if (t3 == 2){
+                aux_x = x-1; aux_y = y+1;
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+            }
+            if (t4 == 2){
+                aux_x = x+1; aux_y = y+1;
+                le_vizinho(aux_x,aux_y,tabuleiro,lado);
+            }
+        }
 }
 
 
@@ -131,7 +162,7 @@ void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 // Caso a célula não esteja próxima a nenhuma bomba (valor=0), a função deve seguir expandindo todas células vizinhas, até chegar nas margens de bombas próximas (células com valor>0)
 // Se o usuário abrir uma célula que é uma bomba, ele perde o jogo
 // Células marcadas como bombas não podem ser abertas e deverão primeiramente ser desmarcadas, para então serem abertas
-void abrir_celula(struct celula *tabuleiro, int lado){
+int abrir_celula(struct celula *tabuleiro, int lado){
 int x,y,i,n,aux_x, aux_y,u;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	printf("X= ");
@@ -140,11 +171,12 @@ int x,y,i,n,aux_x, aux_y,u;
 	scanf("%d", &x);
 
 	if  (tabuleiro[x*lado + y].valor == -1){
-		printf(" Voce abriu uma bomba \n");
+        printf("              PERDEU       \n");
+		printf(" ....:: Voce abriu uma bomba ::...\n ");
 		for (i=0;i<lado;i++){
 				for (n=0; n<lado;n++){
 					if ( tabuleiro[i*lado + n].valor == -1)
-						printf(" @ ");
+						printf(" * ");
 					else
                         if (tabuleiro[i*lado + n].valor == 0)
                             printf("   ");
@@ -153,17 +185,20 @@ int x,y,i,n,aux_x, aux_y,u;
 				}
 				printf(" \n ");
 		}
+		return 0;
 	}
 
     abrir_celula2(tabuleiro,lado,x,y);
+
     for(u=0;u<lado;u++){
         for (i=0;i<lado;i++)
             for (n=0; n<lado;n++)
                 if (tabuleiro[i*lado + n].val == 9){
                     abrir_celula2(tabuleiro,lado,i,n);
                     tabuleiro[i*lado + n].val = 0;
-            }
+                }
     }
+    return 1;
 }
 
 
@@ -178,14 +213,17 @@ void marcar_bomba(struct celula *tabuleiro, int lado){
 	int x,y;
 	printf("Entre com a posicao desejada\n");
 	printf("X=");
-	scanf("%d",&x);
-	printf("Y=");
 	scanf("%d",&y);
-	if (tabuleiro[y*lado + x].imprime == 'B'){
-		tabuleiro[y*lado + x].imprime = 35;
+	printf("Y=");
+	scanf("%d",&x);
+	if (tabuleiro[x*lado + y].imprime == 'B'){
+		tabuleiro[x*lado + y].imprime = '#';
 	}
-	else
-		tabuleiro[y*lado + x].imprime = 66;
+	else if (tabuleiro[x*lado + y].imprime == '#')
+            tabuleiro[x*lado + y].imprime = 'B';
+        else
+            printf(" Essa casa ja foi aberta... \n");
+
 	}
 //Essa função é executada no final do jogo. Ela escreve a pontuação do jogador no arquivo texto pontos.txt.
 // Ela recebe por parâmetro o nome do jogador, o tamanho do lado do tabuleiro, o número de bombas do jogo atual e o número de células abertas até o final do jogo
@@ -215,10 +253,8 @@ int main (int argc, char *argv[]){
 	char jogador[20],o;
 	//Para controle de laços
 	int i,n;
-	printf("bomb: %d\n", num_bombas);
-	printf("total perm: %d\n", lado_tabuleiro*lado_tabuleiro);
 	//Escreva aqui um trecho de código para verificar a consistência de dados de entrada do programa (argc e argv)
-	if (argc!=4 || lado_tabuleiro < 2 || lado_tabuleiro*lado_tabuleiro <= num_bombas){
+	if (argc!=4 || lado_tabuleiro < 2 || (lado_tabuleiro*lado_tabuleiro)/3 <= num_bombas){
 		printf("Erro\n\n");
 		return 0;
 	}
@@ -243,12 +279,13 @@ int main (int argc, char *argv[]){
 	opcoes();
 	while(1){
 		imprime_tabuleiro(tabuleiro,lado_tabuleiro);
-		printf("Insira a opcao (a/b/c/s): ");
+		printf("Insira uma opcao (a/b/c/s): ");
 		scanf(" %c", &o);
 		switch(o){
 			case 'a':
-				abrir_celula(tabuleiro,lado_tabuleiro);
-				break;
+				if(abrir_celula(tabuleiro,lado_tabuleiro) == 0)
+                    return 0;
+                break;
 			case 'b':
 				marcar_bomba(tabuleiro,lado_tabuleiro);
 				break;
@@ -262,16 +299,18 @@ int main (int argc, char *argv[]){
 					for (n=0; n<lado_tabuleiro;n++)
 						printf(" %d ", tabuleiro[i*lado_tabuleiro + n].valor);
 					printf(" \n ");
-				}
-				break;
-            case 'e':
-                for (i=0;i<lado_tabuleiro;i++){
+				}break;
+        	        case 'e':
+			        for (i=0;i<lado_tabuleiro;i++){
 					for (n=0; n<lado_tabuleiro;n++)
-						printf(" %d ", tabuleiro[i*lado_tabuleiro + n].val);
+						printf(" %d ", tabuleiro[i*lado_tabuleiro + n].val);					
 					printf(" \n ");
-				}
+        			}break;
+		        default:
+        			 printf("Opcao invalida");
+                		opcoes();
 				break;
-		}
+		}//fim switch
 
 	}
 //Aqui as bombas devem ser criadas no tabuleiro e os valores de controle de todas células devem ser calculados
