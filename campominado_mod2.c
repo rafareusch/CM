@@ -10,6 +10,7 @@ struct celula {
 	char imprime;
 //Membro que deverá conter o valor de controle da célula
 	int valor;
+	int val;
 };
 void opcoes(){
 	printf("\n	COMANDOS:\n");
@@ -35,15 +36,13 @@ void jogada(struct celula *tabuleiro, int lado, int total_bombas){
 // Assumindo que o usuário solicite leitura do vizinho x=-1 e y=0, da célula 22, a função deverá retornar o valor ou o caracter a ser impresso da célula 12
 //void le_vizinho(int x, int y, int posicao, int controle, struct celula *tabuleiro, int lado){
 void le_vizinho(int x, int y, struct celula *tabuleiro, int lado){
-	if  (tabuleiro[x*lado + y].valor != -1){
+
 		if (tabuleiro[x*lado + y].valor > 0)
-			tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';	
-		if (tabuleiro[x*lado + y].valor == 0)
-			tabuleiro[x*lado + y].imprime = ' ';
-	}
-	
-	
-				
+			tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';
+		if (tabuleiro[x*lado + y].valor == 0){
+            tabuleiro[x*lado + y].imprime = ' ';
+            tabuleiro[x*lado + y].val = 9;
+		}
 }
 
 
@@ -65,12 +64,12 @@ void gera_bombas(struct celula *tabuleiro, int lado, int num_bombas){
 
 //Essa função imprime o tabuleiro, mostrando apenas os caracteres de impressão para o jogador
 // Ela recebe por parâmetro a referência para o tabuleiro e o tamanho do lado do tabuleiro
-int imprime_tabuleiro(struct celula *tabuleiro, int lado){
+void imprime_tabuleiro(struct celula *tabuleiro, int lado){
  	int i,n;
- 	
+
  	for (i=0;i<lado;i=i+2){
 		if (i==0)
-			printf("\n   %d",i);
+			printf("\n    %d",i);
 		else if (i<10)
  			printf("     %d", i);
  			else
@@ -79,27 +78,52 @@ int imprime_tabuleiro(struct celula *tabuleiro, int lado){
  	printf("\n");
  	for (i=1;i<lado;i=i+2)
  	if (i==1)
-			printf("      %d",i);
+			printf("       %d",i);
 		else if (i<10)
  			printf("     %d", i);
  			else
  			printf("    %d", i);
- 	
- 		
- 		
+    printf("\n");
+    for(i=0;i<lado;i++)
+        if (i==0)
+            printf("   __");
+        else
+            printf("___");
+
+
  	printf("\n");
  	for (i=0;i<lado;i++){
  			if (i<10)
  				printf(" ");
- 		printf("%d", i);
+ 		printf("%d|", i);
 	 	for (n=0; n<lado;n++){
-	 			
+
 				printf(" %c ", tabuleiro[i*lado + n].imprime);
 		}
  	printf("\n");
-	}		
+	}
 }
 
+
+void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
+
+    int aux_x,aux_y;
+		aux_x = x-1; aux_y = y;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
+                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+
+        aux_x = x+1; aux_y = y;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
+                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+
+        aux_x = x; aux_y = y+1;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
+                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+
+        aux_x = x; aux_y = y-1;
+            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1)
+                        le_vizinho(aux_x,aux_y,tabuleiro,lado);
+}
 
 
 //Essa função solicita uma coordenada XY (usando as funções printf() e scanf()) e abre uma célula no tabuleiro
@@ -108,40 +132,43 @@ int imprime_tabuleiro(struct celula *tabuleiro, int lado){
 // Se o usuário abrir uma célula que é uma bomba, ele perde o jogo
 // Células marcadas como bombas não podem ser abertas e deverão primeiramente ser desmarcadas, para então serem abertas
 void abrir_celula(struct celula *tabuleiro, int lado){
-int x,y,i,n,aux_x, aux_y;
+int x,y,i,n,aux_x, aux_y,u;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	printf("X= ");
 	scanf("%d",&y);
 	printf("Y= ");
 	scanf("%d", &x);
-	
+
 	if  (tabuleiro[x*lado + y].valor == -1){
 		printf(" Voce abriu uma bomba \n");
 		for (i=0;i<lado;i++){
 				for (n=0; n<lado;n++){
 					if ( tabuleiro[i*lado + n].valor == -1)
-						printf(" * ");
+						printf(" @ ");
 					else
-						printf(" %d ", tabuleiro[i*lado + n].valor);
+                        if (tabuleiro[i*lado + n].valor == 0)
+                            printf("   ");
+                        else
+                            printf(" %d ", tabuleiro[i*lado + n].valor);
 				}
 				printf(" \n ");
 		}
 	}
-	if  (tabuleiro[x*lado + y].valor != -1){
-		if (tabuleiro[x*lado + y].valor > 0)
-			tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';	
-		if (tabuleiro[x*lado + y].valor == 0)
-			tabuleiro[x*lado + y].imprime = ' ';
-	}
-	
-		for(aux_x=x-1;aux_x<=x+1;aux_x++)
-			for(aux_y=y-1;aux_y<=y+1;aux_y++){
-				if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0)
-					if (tabuleiro[x*lado + y].valor != -1)
-						le_vizinho(aux_x,aux_y,tabuleiro,lado);
-					
-			}
+
+    abrir_celula2(tabuleiro,lado,x,y);
+    for(u=0;u<lado;u++){
+        for (i=0;i<lado;i++)
+            for (n=0; n<lado;n++)
+                if (tabuleiro[i*lado + n].val == 9){
+                    abrir_celula2(tabuleiro,lado,i,n);
+                    tabuleiro[i*lado + n].val = 0;
+            }
+    }
 }
+
+
+
+
 
 
 
@@ -168,12 +195,13 @@ void marcar_bomba(struct celula *tabuleiro, int lado){
 // A pontuação deve ser escrita nesse arquivo em ordem decrescente de pontos (o primeiro colocado é aquele com a maior pontuação)
 // Antes de finalizar o jogo, essa função deve imprimir os 10 melhores jogadores
 void fim_de_jogo(char jogador[20], int lado, int num_bombas, int celulas_abertas);
+
 int calcvalor(struct celula *tabuleiro, int x, int y,int lado){
 	int b=0,aux_x, aux_y;
 		for(aux_x=x-1;aux_x<=x+1;aux_x++)
 			for(aux_y=y-1;aux_y<=y+1;aux_y++){
 				if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0)
-					if(tabuleiro[aux_x*lado+aux_y].valor == -1)	
+					if(tabuleiro[aux_x*lado+aux_y].valor == -1)
 						b++;
 			}
 	return b;
@@ -187,9 +215,11 @@ int main (int argc, char *argv[]){
 	char jogador[20],o;
 	//Para controle de laços
 	int i,n;
+	printf("bomb: %d\n", num_bombas);
+	printf("total perm: %d\n", lado_tabuleiro*lado_tabuleiro);
 	//Escreva aqui um trecho de código para verificar a consistência de dados de entrada do programa (argc e argv)
 	if (argc!=4 || lado_tabuleiro < 2 || lado_tabuleiro*lado_tabuleiro <= num_bombas){
-		printf("Erro");
+		printf("Erro\n\n");
 		return 0;
 	}
 	printf("\nJogador %s, Tabuleiro %dx%d com %d Bombas!\n", argv[1],lado_tabuleiro,lado_tabuleiro,num_bombas);
@@ -234,7 +264,15 @@ int main (int argc, char *argv[]){
 					printf(" \n ");
 				}
 				break;
+            case 'e':
+                for (i=0;i<lado_tabuleiro;i++){
+					for (n=0; n<lado_tabuleiro;n++)
+						printf(" %d ", tabuleiro[i*lado_tabuleiro + n].val);
+					printf(" \n ");
+				}
+				break;
 		}
+
 	}
 //Aqui as bombas devem ser criadas no tabuleiro e os valores de controle de todas células devem ser calculados
 //Escreva aqui um trecho de código para controle de rodadas do jogo
@@ -242,9 +280,3 @@ int main (int argc, char *argv[]){
 
 return 0;
 }
-/* IMRPIME TABULEIRO VALORES
-for (i=0;i<lado_tabuleiro;i++){
-for (n=0; n<lado_tabuleiro;n++)
-printf(" %d ", tabuleiro[i*lado_tabuleiro + n].valor);
-printf(" \n ");
-}*/
