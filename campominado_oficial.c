@@ -10,7 +10,7 @@ struct celula {
 	char imprime;
 //Membro que deverá conter o valor de controle da célula
 	int valor;
-	int val;
+	int abrir;
 };
 void opcoes(){
 	printf("\n	COMANDOS:\n");
@@ -36,12 +36,11 @@ void jogada(struct celula *tabuleiro, int lado, int total_bombas){
 // Assumindo que o usuário solicite leitura do vizinho x=-1 e y=0, da célula 22, a função deverá retornar o valor ou o caracter a ser impresso da célula 12
 //void le_vizinho(int x, int y, int posicao, int controle, struct celula *tabuleiro, int lado){
 void le_vizinho(int x, int y, struct celula *tabuleiro, int lado){
-
 		if (tabuleiro[x*lado + y].valor > 0)
 			tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';
-		if (tabuleiro[x*lado + y].valor == 0){
+		else{
             tabuleiro[x*lado + y].imprime = ' ';
-            tabuleiro[x*lado + y].val = 9;
+            tabuleiro[x*lado + y].abrir = 1;
 		}
 }
 
@@ -163,12 +162,21 @@ void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 // Se o usuário abrir uma célula que é uma bomba, ele perde o jogo
 // Células marcadas como bombas não podem ser abertas e deverão primeiramente ser desmarcadas, para então serem abertas
 int abrir_celula(struct celula *tabuleiro, int lado){
-int x,y,i,n,aux_x, aux_y,u;
+int x,y,i,u,n;
+char o;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	printf("X= ");
 	scanf("%d",&y);
 	printf("Y= ");
 	scanf("%d", &x);
+    if (tabuleiro[x*lado + y].imprime == 'B'){
+        printf("Essa casa foi marcda como bomba\n");
+        printf("Deseja retirar a marcacao e abrir a casa? (Y/N): ");
+        scanf("  %c",&o);
+        printf("\n");
+        if (o == 'N' || o == 'n')
+            return 1;
+    }
 
 	if  (tabuleiro[x*lado + y].valor == -1){
         printf("              PERDEU       \n");
@@ -183,7 +191,7 @@ int x,y,i,n,aux_x, aux_y,u;
                         else
                             printf(" %d ", tabuleiro[i*lado + n].valor);
 				}
-				printf(" \n ");
+printf(" \n ");
 		}
 		return 0;
 	}
@@ -193,19 +201,13 @@ int x,y,i,n,aux_x, aux_y,u;
     for(u=0;u<lado;u++){
         for (i=0;i<lado;i++)
             for (n=0; n<lado;n++)
-                if (tabuleiro[i*lado + n].val == 9){
+                if (tabuleiro[i*lado + n].abrir == 1){
                     abrir_celula2(tabuleiro,lado,i,n);
-                    tabuleiro[i*lado + n].val = 0;
+                    tabuleiro[i*lado + n].abrir = 0;
                 }
     }
     return 1;
 }
-
-
-
-
-
-
 
 //Essa função solicita uma coordenada XY (usando as funções printf() e scanf()) e marca uma célula no tabuleiro como bomba. Caso a célula já esteja marcada como bomba, a função desmarca a célula
 // Ela recebe por parâmetro a referência para o tabuleiro e o tamanho do lado do tabuleiro
@@ -283,36 +285,39 @@ int main (int argc, char *argv[]){
 		scanf(" %c", &o);
 		switch(o){
 			case 'a':
-				if(abrir_celula(tabuleiro,lado_tabuleiro) == 0)
-                    return 0;
-                break;
+                    if(abrir_celula(tabuleiro,lado_tabuleiro) == 0)
+                        return 0;
+                    break;
 			case 'b':
-				marcar_bomba(tabuleiro,lado_tabuleiro);
-				break;
+                    marcar_bomba(tabuleiro,lado_tabuleiro);
+                    break;
 			case 'c':
-				opcoes();
-				break;
+                    opcoes();
+                    break;
 			case 's':
-				return 0;
+                    return 0;
 			case 'd':
-				for (i=0;i<lado_tabuleiro;i++){
-					for (n=0; n<lado_tabuleiro;n++)
-						printf(" %d ", tabuleiro[i*lado_tabuleiro + n].valor);
-					printf(" \n ");
-				}break;
-        	        case 'e':
-			        for (i=0;i<lado_tabuleiro;i++){
-					for (n=0; n<lado_tabuleiro;n++)
-						printf(" %d ", tabuleiro[i*lado_tabuleiro + n].val);					
-					printf(" \n ");
-        			}break;
-		        default:
-        			 printf("Opcao invalida");
-                		opcoes();
-				break;
+                    printf(" ");
+                    for (i=0;i<lado_tabuleiro;i++){
+                        for (n=0; n<lado_tabuleiro;n++){
+                            if(tabuleiro[i*lado_tabuleiro + n].valor == 0)
+                                printf("   ");
+                            else
+                                if (tabuleiro[i*lado_tabuleiro + n].valor == -1)
+                                    printf(" * ");
+                                else
+                                    printf(" %d ", tabuleiro[i*lado_tabuleiro + n].valor);
+
+                        } printf(" \n ");
+                    } break;
+
+            default:
+                    printf("Opcao invalida");
+                    opcoes();
+                    break;
 		}//fim switch
 
-	}
+	}//fim while
 //Aqui as bombas devem ser criadas no tabuleiro e os valores de controle de todas células devem ser calculados
 //Escreva aqui um trecho de código para controle de rodadas do jogo
 //Escreva aqui um trecho de código para finalizar o jogo
