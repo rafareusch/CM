@@ -161,8 +161,8 @@ void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 // Caso a célula não esteja próxima a nenhuma bomba (valor=0), a função deve seguir expandindo todas células vizinhas, até chegar nas margens de bombas próximas (células com valor>0)
 // Se o usuário abrir uma célula que é uma bomba, ele perde o jogo
 // Células marcadas como bombas não podem ser abertas e deverão primeiramente ser desmarcadas, para então serem abertas
-int abrir_celula(struct celula *tabuleiro, int lado){
-int x,y,i,u,n;
+int abrir_celula(struct celula *tabuleiro, int lado, int bomb){
+int x,y,i,u,n,pont;
 char o;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	printf("X= ");
@@ -170,7 +170,7 @@ char o;
 	printf("Y= ");
 	scanf("%d", &x);
     if (tabuleiro[x*lado + y].imprime == 'B'){
-        printf("Essa casa foi marcda como bomba\n");
+        printf("Essa casa foi marcada como bomba\n");
         printf("Deseja retirar a marcacao e abrir a casa? (Y/N): ");
         scanf("  %c",&o);
         printf("\n");
@@ -206,7 +206,18 @@ printf(" \n ");
                     tabuleiro[i*lado + n].abrir = 0;
                 }
     }
-    return 1;
+    u=0;
+    for (i=0;i<lado;i++)
+        for (n=0; n<lado;n++)
+            if (tabuleiro[i*lado + n].imprime != '#')
+                u++;
+    if (u == lado*lado - bomb){
+        printf(" Todas as casas abertas \n");
+        pont = (lado*lado)*(bomb)*(u/((lado*lado)-bomb));
+        printf("%d",pont);
+
+        return 0;
+    }else return 1;
 }
 
 //Essa função solicita uma coordenada XY (usando as funções printf() e scanf()) e marca uma célula no tabuleiro como bomba. Caso a célula já esteja marcada como bomba, a função desmarca a célula
@@ -285,7 +296,7 @@ int main (int argc, char *argv[]){
 		scanf(" %c", &o);
 		switch(o){
 			case 'a':
-                    if(abrir_celula(tabuleiro,lado_tabuleiro) == 0)
+                    if(abrir_celula(tabuleiro,lado_tabuleiro,num_bombas) == 0)
                         return 0;
                     break;
 			case 'b':
