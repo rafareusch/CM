@@ -223,8 +223,10 @@ char o;
     u=0;
     for (i=0;i<lado;i++)
         for (n=0; n<lado;n++)
-            if (tabuleiro[i*lado + n].imprime != '#')
-                u++;
+            if (tabuleiro[i*lado + n].imprime != 35){
+            printf("entrou\n");
+            u++;
+			}
     printf("%d",u);
     if (u == (lado*lado) - bomb){
 		printf("             Voce ganhou!! \n");
@@ -296,7 +298,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
 		}
 
 		fclose(pFile);
-		linhas = --i;
+		linhas = i;
 
 		strcpy(player[i].nome, jogador);
     	player[i].pontos=pont;
@@ -305,7 +307,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
 		j=1;
     	while(j){
 			j = 0;
-			for(i=1;i<linhas+1,i<100;i++){
+			for(i=1;i<linhas,i<100;i++){
 				if(player[i-1].pontos < player[i].pontos) {
 					memcpy(&aux, &player[i-1],sizeof(struct info));
 					memcpy(&player[i-1], &player[i],sizeof(struct info));
@@ -321,13 +323,13 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
   		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
   }
-
+  
   	// escrevendo no arquivo
-  	imprime:
+  	printf("%d",linhas);
   	pFile = NULL;
 	pFile = fopen ("Ranking.txt", "w+");
 	printf("     Ranking: \n");
-	for (i=0,linhas++;i<linhas;i++){
+	for (i=0;i<linhas+1 &&i<10;i++){ // (linhas++)
 		fprintf(pFile, "%s %f\n",player[i].nome,player[i].pontos);
 		printf("%d Lugar: %s %.2f pontos\n",i+1,player[i].nome, player[i].pontos);
 	}
@@ -417,19 +419,20 @@ int main (int argc, char *argv[]){
                         } printf(" \n ");
                     } break;
 			case 'p':
-
 					pFile = fopen("Ranking.txt", "r");
-
 					if (pFile != NULL){
-						for (i=0;i<10;i++){
-							fgets(nome, 15, pFile);
+						i=0;
+						while(!feof(pFile)){
+							fgets(nome, 22, pFile);
 							sscanf(nome,"%s %f",player[i].nome,&player[i].pontos);
+							i++;
 						}
-						for (i=0;i<10;i++)
-							printf("%d Lugar: %s %f pontos\n",i,player[i].nome,&player[i].pontos);
-
-
-					}else printf("Arquivo Rankint.txt nao encontrado\n");
+						printf("      Ranking:\n");
+						for (n=0;n<10 && n<i-1;n++)
+							printf("%d Lugar: %s %.2f pontos\n",n+1,player[n].nome,player[n].pontos);
+					}else
+						printf("Arquivo Rankint.txt nao encontrado\n");
+					break;
             default:
                     printf("Opcao invalida");
                     opcoes();
