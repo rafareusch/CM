@@ -289,7 +289,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
     FILE * pFile;
 	i=0;
 	pFile = fopen ("Ranking.txt", "r");
- 	if(pFile != NULL){
+ if(pFile != NULL){
 
 		while(!feof(pFile)){
 				fgets(v, 22, pFile);
@@ -318,7 +318,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
     	    }
 		}
 
-}// fim while
+}// fim if
   if (controle == 0){ //caso seja primeira vez
   		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
