@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -228,12 +227,12 @@ char o;
                 u++;
     printf("%d",u);
     if (u == (lado*lado) - bomb){
-		printf("             Voce ganhou!! \n");	
+		printf("             Voce ganhou!! \n");
 		printf("  Todas as casas foram abertas! \n\n");
-		
+
        return 0;
     }
-    else 
+    else
 		return 1;
 }
 
@@ -258,11 +257,11 @@ void marcar_bomba(struct celula *tabuleiro, int lado){
             printf(" Essa casa ja foi aberta... \n");
 
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 //Essa função é executada no final do jogo. Ela escreve a pontuação do jogador no arquivo texto pontos.txt.
 // Ela recebe por parâmetro o nome do jogador, o tamanho do lado do tabuleiro, o número de bombas do jogo atual e o número de células abertas até o final do jogo
 // O cálculo da pontuação (P) é feito da seguinte forma:
@@ -275,39 +274,39 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
 	float pont,pct,auxf;
 	char auxc[20], v[20];
 	struct info player[100],aux;
-		
+
 	for (i=0;i<lado;i++)
         for (n=0; n<lado;n++)
             if (tabuleiro[i*lado + n].imprime != '#')
                 u++;
-                         
+
     pct= (float)u/((lado*lado)-bomb);
-	pont=(float)(lado*lado)*(bomb)*(pct); 
+	pont=(float)(lado*lado)*(bomb)*(pct);
     printf("Voce fez %.2f pontos!\n",pont);
     // lendo e salvando na struct
     FILE * pFile;
 	i=0;
 	pFile = fopen ("Ranking.txt", "r");
- 	if(pFile != NULL){	
-	
+ 	if(pFile != NULL){
+
 		while(!feof(pFile)){
 				fgets(v, 22, pFile);
 				sscanf(v,"%s %f",player[i].nome,&player[i].pontos);
 				i++;
 		}
-	
+
 		fclose(pFile);
 		linhas = --i;
-	
+
 		strcpy(player[i].nome, jogador);
     	player[i].pontos=pont;
-	
+
 		// reordenando o vetor
 		j=1;
     	while(j){
 			j = 0;
 			for(i=1;i<linhas+1,i<100;i++){
-				if(player[i-1].pontos < player[i].pontos) {	
+				if(player[i-1].pontos < player[i].pontos) {
 					memcpy(&aux, &player[i-1],sizeof(struct info));
 					memcpy(&player[i-1], &player[i],sizeof(struct info));
 					memcpy(&player[i], &aux,sizeof(struct info));
@@ -319,10 +318,10 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
 
 }// fim while
   if (controle == 0){ //caso seja primeira vez
-  		strcpy(player[0].nome, jogador);				
+  		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
   }
-  
+
   	// escrevendo no arquivo
   	imprime:
   	pFile = NULL;
@@ -333,7 +332,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
 		printf("%d Lugar: %s %.2f pontos\n",i+1,player[i].nome, player[i].pontos);
 	}
 	fclose(pFile);
-	
+
 }
 
 
@@ -355,6 +354,7 @@ int calcvalor(struct celula *tabuleiro, int x, int y,int lado){
 int main (int argc, char *argv[]){
 	struct celula *tabuleiro, *tabuleiro_aux;
 	struct info player[10];
+	FILE * pFile;
 	int lado_tabuleiro=atoi(argv[2]), num_bombas=atoi(argv[3]), semente;
 	char jogador[20],nome[100],o;
 	int i,n;
@@ -417,17 +417,18 @@ int main (int argc, char *argv[]){
                         } printf(" \n ");
                     } break;
 			case 'p':
-					FILE * pFile;
+
 					pFile = fopen("Ranking.txt", "r");
-					
+
 					if (pFile != NULL){
 						for (i=0;i<10;i++){
 							fgets(nome, 15, pFile);
-							sscanf(nome,"%s %d",player[i].nome,&player[i].pontos);
+							sscanf(nome,"%s %f",player[i].nome,&player[i].pontos);
 						}
 						for (i=0;i<10;i++)
-							printf("%d Lugar: %s %f pontos\n",player[i].nome,&player[i].pontos);
-							
+							printf("%d Lugar: %s %f pontos\n",i,player[i].nome,&player[i].pontos);
+
+
 					}else printf("Arquivo Rankint.txt nao encontrado\n");
             default:
                     printf("Opcao invalida");
