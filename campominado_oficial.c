@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-#include <unistd.h>
+
 //Estrutura básica de cada célula do tabuleiro
 struct celula {
 //Membro que deverá conter o valor a ser impresso da célula
@@ -11,6 +11,10 @@ struct celula {
 //Membro que deverá conter o valor de controle da célula
 	int valor;
 	int abrir;
+};
+struct info{
+	char nome[10];
+	float pontos;
 };
 void opcoes(){
 	printf("\n	COMANDOS:\n");
@@ -20,8 +24,8 @@ void opcoes(){
 //Essa função será executada na main, para que o jogador realize suas jogadas, até o final do jogo
 // Ela recebe por parâmetro a referência para o tabuleiro, juntamente com o tamanho do lado do tabuleiro e o número total de bombas
 // A função deve retornar 1 enquanto o jogo não acabar e 0 quando ele acabar
-void jogada(struct celula *tabuleiro, int lado, int total_bombas){
-}
+//void jogada(struct celula *tabuleiro, int lado, int total_bombas);
+
 
 
 //Essa função facilita funções de abertura de célula e de cálculo de valor de células
@@ -104,6 +108,9 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
 }
 
 
+
+
+
 void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 
         int aux_x,aux_y,t1=0,t2=0,t3=0,t4=0;
@@ -156,15 +163,19 @@ void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 }
 
 
+
+
+
 //Essa função solicita uma coordenada XY (usando as funções printf() e scanf()) e abre uma célula no tabuleiro
 // Ela recebe por parâmetro a referência para o tabuleiro e o tamanho do lado do tabuleiro
 // Caso a célula não esteja próxima a nenhuma bomba (valor=0), a função deve seguir expandindo todas células vizinhas, até chegar nas margens de bombas próximas (células com valor>0)
 // Se o usuário abrir uma célula que é uma bomba, ele perde o jogo
 // Células marcadas como bombas não podem ser abertas e deverão primeiramente ser desmarcadas, para então serem abertas
-int abrir_celula(struct celula *tabuleiro, int lado, int bomb){
+int jogada(struct celula *tabuleiro, int lado, int bomb){
 int x,y,i,u,n,pont;
 char o;
 	printf("Entre com a posicao da casa a ser aberta\n");
+	erro:
 	printf("X= ");
 	scanf("%d",&y);
 	printf("Y= ");
@@ -191,11 +202,14 @@ char o;
                         else
                             printf(" %d ", tabuleiro[i*lado + n].valor);
 				}
-printf(" \n ");
+		printf(" \n ");
 		}
 		return 0;
 	}
-
+	if(x<0 || y<0 || x>=lado || y>=lado){
+		printf("Cordenada invalida, insira outra\n");
+		goto erro;
+	}
     abrir_celula2(tabuleiro,lado,x,y);
 
     for(u=0;u<lado;u++){
@@ -211,14 +225,19 @@ printf(" \n ");
         for (n=0; n<lado;n++)
             if (tabuleiro[i*lado + n].imprime != '#')
                 u++;
-    if (u == lado*lado - bomb){
-        printf(" Todas as casas abertas \n");
-        pont = (lado*lado)*(bomb)*(u/((lado*lado)-bomb));
-        printf("%d",pont);
-
-        return 0;
-    }else return 1;
+    printf("%d",u);
+    if (u == (lado*lado) - bomb){
+		printf("             Voce ganhou!! \n");	
+		printf("  Todas as casas foram abertas! \n\n");
+		
+       return 0;
+    }
+    else 
+		return 1;
 }
+
+
+
 
 //Essa função solicita uma coordenada XY (usando as funções printf() e scanf()) e marca uma célula no tabuleiro como bomba. Caso a célula já esteja marcada como bomba, a função desmarca a célula
 // Ela recebe por parâmetro a referência para o tabuleiro e o tamanho do lado do tabuleiro
@@ -238,6 +257,11 @@ void marcar_bomba(struct celula *tabuleiro, int lado){
             printf(" Essa casa ja foi aberta... \n");
 
 	}
+	
+	
+	
+	
+	
 //Essa função é executada no final do jogo. Ela escreve a pontuação do jogador no arquivo texto pontos.txt.
 // Ela recebe por parâmetro o nome do jogador, o tamanho do lado do tabuleiro, o número de bombas do jogo atual e o número de células abertas até o final do jogo
 // O cálculo da pontuação (P) é feito da seguinte forma:
@@ -245,7 +269,73 @@ void marcar_bomba(struct celula *tabuleiro, int lado){
 // onde pct_celulas=celulas_abertas/((lado*lado)-num_bombas)
 // A pontuação deve ser escrita nesse arquivo em ordem decrescente de pontos (o primeiro colocado é aquele com a maior pontuação)
 // Antes de finalizar o jogo, essa função deve imprimir os 10 melhores jogadores
-void fim_de_jogo(char jogador[20], int lado, int num_bombas, int celulas_abertas);
+void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,int logic){
+	int i,n,u=0,linhas=0,controle=0,j,l=lado;
+	float pont,pct,auxf;
+	char auxc[20], v[20];
+	struct info player[100],aux;
+		
+	for (i=0;i<lado;i++)
+        for (n=0; n<lado;n++)
+            if (tabuleiro[i*lado + n].imprime != '#')
+                u++;
+                         
+    pct= (float)u/((lado*lado)-bomb);
+	pont=(float)(lado*lado)*(bomb)*(pct); 
+    printf("Voce fez %.2f pontos!\n",pont);
+    // lendo e salvando na struct
+    FILE * pFile;
+	i=0;
+	pFile = fopen ("Ranking.txt", "r");
+ 	if(pFile != NULL){	
+	
+		while(!feof(pFile)){
+				fgets(v, 22, pFile);
+				sscanf(v,"%s %f",player[i].nome,&player[i].pontos);
+				i++;
+		}
+	
+		fclose(pFile);
+		linhas = --i;
+	
+		strcpy(player[i].nome, jogador);
+    	player[i].pontos=pont;
+	
+		// reordenando o vetor
+		j=1;
+    	while(j){
+			j = 0;
+			for(i=1;i<linhas+1,i<100;i++){
+				if(player[i-1].pontos < player[i].pontos) {	
+					memcpy(&aux, &player[i-1],sizeof(struct info));
+					memcpy(&player[i-1], &player[i],sizeof(struct info));
+					memcpy(&player[i], &aux,sizeof(struct info));
+					j = 1;
+					controle = 1;
+    	        }
+    	    }
+		}
+
+}// fim while
+  if (controle == 0){ //caso seja primeira vez
+  		strcpy(player[0].nome, jogador);				
+		player[0].pontos = pont;
+  }
+  
+  	// escrevendo no arquivo
+  	imprime:
+  	pFile = NULL;
+	pFile = fopen ("Ranking.txt", "w+");
+	printf("     Ranking: \n");
+	for (i=0,linhas++;i<linhas;i++){
+		fprintf(pFile, "%s %f\n",player[i].nome,player[i].pontos);
+		printf("%d Lugar: %s %.2f pontos\n",i+1,player[i].nome, player[i].pontos);
+	}
+	fclose(pFile);
+	
+}
+
+
 
 int calcvalor(struct celula *tabuleiro, int x, int y,int lado){
 	int b=0,aux_x, aux_y;
@@ -258,20 +348,22 @@ int calcvalor(struct celula *tabuleiro, int x, int y,int lado){
 	return b;
 }
 
+
+
+
 int main (int argc, char *argv[]){
-	//Tabuleiro e variáveis para controle
 	struct celula *tabuleiro, *tabuleiro_aux;
+	struct info player[10];
 	int lado_tabuleiro=atoi(argv[2]), num_bombas=atoi(argv[3]), semente;
-	//Nome do jogador
-	char jogador[20],o;
-	//Para controle de laços
+	char jogador[20],nome[100],o;
 	int i,n;
+	strcpy(jogador,argv[1]);
 	//Escreva aqui um trecho de código para verificar a consistência de dados de entrada do programa (argc e argv)
 	if (argc!=4 || lado_tabuleiro < 2 || (lado_tabuleiro*lado_tabuleiro)/3 <= num_bombas){
 		printf("Erro\n\n");
 		return 0;
 	}
-	printf("\nJogador %s, Tabuleiro %dx%d com %d Bombas!\n", argv[1],lado_tabuleiro,lado_tabuleiro,num_bombas);
+	printf("\nJogador %s, Tabuleiro %dx%d com %d Bombas!\n", jogador,lado_tabuleiro,lado_tabuleiro,num_bombas);
 	//Escreva aqui um trecho de código para inicializar as variáveis do jogo
 	//Escreva aqui um trecho de código para inicialização do tabuleiro e alocação de espaço em memória (usar malloc)
 
@@ -296,9 +388,11 @@ int main (int argc, char *argv[]){
 		scanf(" %c", &o);
 		switch(o){
 			case 'a':
-                    if(abrir_celula(tabuleiro,lado_tabuleiro,num_bombas) == 0)
-                        return 0;
-                    break;
+                    if(jogada(tabuleiro,lado_tabuleiro,num_bombas) == 0){
+					    fim_de_jogo(tabuleiro,jogador,lado_tabuleiro,num_bombas,0);
+                    	return 0;
+						}
+					break;
 			case 'b':
                     marcar_bomba(tabuleiro,lado_tabuleiro);
                     break;
@@ -321,7 +415,19 @@ int main (int argc, char *argv[]){
 
                         } printf(" \n ");
                     } break;
-
+			case 'p':
+					FILE * pFile;
+					pFile = fopen("Ranking.txt", "r");
+					
+					if (pFile != NULL){
+						for (i=0;i<10;i++){
+							fgets(nome, 15, pFile);
+							sscanf(nome,"%s %d",player[i].nome,&player[i].pontos);
+						}
+						for (i=0;i<10;i++)
+							printf("%d Lugar: %s %f pontos\n",player[i].nome,&player[i].pontos);
+							
+					}else printf("Arquivo Rankint.txt nao encontrado\n");
             default:
                     printf("Opcao invalida");
                     opcoes();
