@@ -55,8 +55,8 @@ void gera_bombas(struct celula *tabuleiro, int lado, int num_bombas){
 	int x, y, bomb=0;
 	srand(time(NULL));
 	while(bomb != num_bombas){
-		x = rand()%(lado-1);
-		y = rand()%(lado-1);
+		x = rand()%(lado);
+		y = rand()%(lado);
 		if (tabuleiro[x*lado + y].valor != -1){
 			tabuleiro[x*lado + y].valor = -1;
 			bomb++;
@@ -177,9 +177,9 @@ char o;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	erro:
 	printf("X= ");
-	scanf("%d",&y);
+	scanf(" %d",&y);
 	printf("Y= ");
-	scanf("%d", &x);
+	scanf(" %d", &x);
     if (tabuleiro[x*lado + y].imprime == 'B'){
         printf("Essa casa foi marcada como bomba\n");
         printf("Deseja retirar a marcacao e abrir a casa? (Y/N): ");
@@ -323,7 +323,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
   		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
   }
-  
+
   	// escrevendo no arquivo
   	printf("%d",linhas);
   	pFile = NULL;
