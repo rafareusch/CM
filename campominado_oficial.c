@@ -95,7 +95,7 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
 
 //Essa funçao abre as casas ao redor das posicoes que sao marcadas como abrir 1 pela funcao jogada 
 void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
-        int aux_x,aux_y,t1=0,t2=0,t3=0,t4=0;
+        int aux_x,aux_y;
 
         if (tabuleiro[x*lado + y].valor != 0)
             le_vizinho(x,y,tabuleiro,lado);
