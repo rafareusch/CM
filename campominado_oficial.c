@@ -6,9 +6,7 @@
 
 //Estrutura básica de cada célula do tabuleiro
 struct celula {
-//Membro que deverá conter o valor a ser impresso da célula
 	char imprime;
-//Membro que deverá conter o valor de controle da célula
 	int valor;
 	int abrir;
 };
@@ -21,24 +19,8 @@ void opcoes(){
 	printf(" a - Abrir posicao no tabuleiro\n b - Marcar/Desmarcar posicao no tabuleiro como bomba\n");
 	printf(" p - Lista pontuacoes\n c - Lista de comandos\n\n");
 }
-//Essa função será executada na main, para que o jogador realize suas jogadas, até o final do jogo
-// Ela recebe por parâmetro a referência para o tabuleiro, juntamente com o tamanho do lado do tabuleiro e o número total de bombas
-// A função deve retornar 1 enquanto o jogo não acabar e 0 quando ele acabar
-//void jogada(struct celula *tabuleiro, int lado, int total_bombas);
 
-
-
-//Essa função facilita funções de abertura de célula e de cálculo de valor de células
-// Ela recebe por parâmetro um deslocamento XY (que varia entre -1, 0 e 1), uma célula do tabuleiro, um valor de controle, a referência para o tabuleiro e o lado do tabuleiro
-// A função retorna o valor (se controle==0) ou o valor a ser impresso (se controle==1) da célula vizinha
-// Por exemplo:
-// Assumindo coordenadas XY, temos o seguinte tabuleiro 4x4:
-// 00 10 20 30
-// 01 11 21 31
-// 02 12 22 32
-// 03 13 23 33
-// Assumindo que o usuário solicite leitura do vizinho x=-1 e y=0, da célula 22, a função deverá retornar o valor ou o caracter a ser impresso da célula 12
-//void le_vizinho(int x, int y, int posicao, int controle, struct celula *tabuleiro, int lado){
+//Faz a abertura das casas dependendo do seu valor
 void le_vizinho(int x, int y, struct celula *tabuleiro, int lado){
 		if (tabuleiro[x*lado + y].valor > 0)
 			tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';
@@ -53,11 +35,12 @@ void le_vizinho(int x, int y, struct celula *tabuleiro, int lado){
 // Ela recebe por parâmetro a referência para o tabuleiro, juntamente com o tamanho do lado do tabuleiro, o número total de bombas e a semente a ser usada na geração das mesmas
 void gera_bombas(struct celula *tabuleiro, int lado, int num_bombas){
 	int x, y, bomb=0;
+	
 	srand(time(NULL));
 	while(bomb != num_bombas){
 		x = rand()%(lado);
 		y = rand()%(lado);
-		if (tabuleiro[x*lado + y].valor != -1){
+		if (tabuleiro[x*lado + y].valor != -1 && x>=0 && y>=0 && x<=lado && y<=lado){
 			tabuleiro[x*lado + y].valor = -1;
 			bomb++;
 		}
@@ -110,56 +93,19 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
 
 
 
-
+//Essa funçao abre as casas ao redor das posicoes que sao marcadas como abrir 1 pela funcao jogada 
 void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
-
         int aux_x,aux_y,t1=0,t2=0,t3=0,t4=0;
 
         if (tabuleiro[x*lado + y].valor != 0)
             le_vizinho(x,y,tabuleiro,lado);
         else {
-            aux_x = x-1; aux_y = y;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-                t1++;
-                t3++;
-            }
-            aux_x = x+1; aux_y = y;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-                t4++;
-                t2++;
-            }
-            aux_x = x; aux_y = y+1;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-                t3++;
-                t4++;
-            }
-
-            aux_x = x; aux_y = y-1;
-            if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0 && tabuleiro[x*lado + y].valor != -1){
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-                t1++;
-                t2++;
-            }
-            if (t1 == 2){
-                aux_x = x-1; aux_y = y-1;
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-            }
-            if (t2 == 2){
-                aux_x = x+1; aux_y = y-1;
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-            }
-            if (t3 == 2){
-                aux_x = x-1; aux_y = y+1;
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-            }
-            if (t4 == 2){
-                aux_x = x+1; aux_y = y+1;
-                le_vizinho(aux_x,aux_y,tabuleiro,lado);
-            }
+        	for(aux_x=x-1;aux_x<=x+1;aux_x++)
+				for(aux_y=y-1;aux_y<=y+1;aux_y++)
+					if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0)
+						le_vizinho(aux_x,aux_y,tabuleiro,lado);
         }
+        
 }
 
 
@@ -177,9 +123,9 @@ char o;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	erro:
 	printf("X= ");
-	scanf(" %d",&y);
+	scanf("%d",&y);
 	printf("Y= ");
-	scanf(" %d", &x);
+	scanf("%d", &x);
     if (tabuleiro[x*lado + y].imprime == 'B'){
         printf("Essa casa foi marcada como bomba\n");
         printf("Deseja retirar a marcacao e abrir a casa? (Y/N): ");
@@ -207,8 +153,8 @@ char o;
 		return 0;
 	}
 	if(x<0 || y<0 || x>=lado || y>=lado){
-		printf("Cordenada invalida, insira outra\n");
-		goto erro;
+		printf("\n       Cordenada invalida, Retornando para o menu\n");
+		return 1;
 	}
     abrir_celula2(tabuleiro,lado,x,y);
 
@@ -223,11 +169,9 @@ char o;
     u=0;
     for (i=0;i<lado;i++)
         for (n=0; n<lado;n++)
-            if (tabuleiro[i*lado + n].imprime != 35){
-            printf("entrou\n");
+            if (tabuleiro[i*lado + n].imprime != 35)
             u++;
-			}
-    printf("%d",u);
+	 
     if (u == (lado*lado) - bomb){
 		printf("             Voce ganhou!! \n");
 		printf("  Todas as casas foram abertas! \n\n");
@@ -285,21 +229,19 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
     pct= (float)u/((lado*lado)-bomb);
 	pont=(float)(lado*lado)*(bomb)*(pct);
     printf("Voce fez %.2f pontos!\n",pont);
-    // lendo e salvando na struct
+    
     FILE * pFile;
 	i=0;
 	pFile = fopen ("Ranking.txt", "r");
  if(pFile != NULL){
-
+		// lendo e salvando na struct
 		while(!feof(pFile)){
 				fgets(v, 22, pFile);
 				sscanf(v,"%s %f",player[i].nome,&player[i].pontos);
 				i++;
 		}
-
 		fclose(pFile);
 		linhas = i;
-
 		strcpy(player[i].nome, jogador);
     	player[i].pontos=pont;
 
@@ -325,7 +267,6 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb,
   }
 
   	// escrevendo no arquivo
-  	printf("%d",linhas);
   	pFile = NULL;
 	pFile = fopen ("Ranking.txt", "w+");
 	printf("     Ranking: \n");
