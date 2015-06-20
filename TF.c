@@ -118,7 +118,7 @@ void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
 // Se o usuário abrir uma célula que é uma bomba, ele perde o jogo
 // Células marcadas como bombas não podem ser abertas e deverão primeiramente ser desmarcadas, para então serem abertas
 int jogada(struct celula *tabuleiro, int lado, int bomb){
-int x,y,i,u,n,pont;
+int x,y,i,u,n,pont,celulas_abertas=0;
 char o;
 	printf("Entre com a posicao da casa a ser aberta\n");
 	erro:
@@ -170,9 +170,9 @@ char o;
     for (i=0;i<lado;i++)
         for (n=0; n<lado;n++)
             if (tabuleiro[i*lado + n].imprime != 35)
-            u++;
+            celulas_abertas++;
 	 
-    if (u == (lado*lado) - bomb){
+    if (celulas_abertas == (lado*lado) - bomb){
 		printf("             Voce ganhou!! \n");
 		printf("  Todas as casas foram abertas! \n\n");
 		printf("Valor casa %d %d = %d\n\n",x,y,tabuleiro[i*lado + n].valor );
