@@ -153,8 +153,8 @@ char o;
 		return 0;
 	}
 	if(x<0 || y<0 || x>=lado || y>=lado){
-		printf("\n       Cordenada invalida, Retornando para o menu\n");
-		return 1;
+		printf("\n       Cordenada invalida, Insira uma valida:\n");
+		goto erro;
 	}
     abrir_celula2(tabuleiro,lado,x,y);
 
@@ -329,7 +329,7 @@ int main (int argc, char *argv[]){
 	while(1){
 		imprime_tabuleiro(tabuleiro,lado_tabuleiro);
 		printf("Insira uma opcao (a/b/c/s): ");
-		scanf(" %c", &o);
+		o=getchar();
 		switch(o){
 			case 'a':
                     if(jogada(tabuleiro,lado_tabuleiro,num_bombas) == 0){
