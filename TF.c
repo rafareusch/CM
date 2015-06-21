@@ -1,4 +1,4 @@
-//teste linha 128
+//teste linha 182
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -257,7 +257,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
 				i++;
 		}
 		fclose(pFile);
-		linhas = i;
+		linhas = --i;
 		strcpy(player[i].nome, jogador);
     	player[i].pontos=pont;
 
@@ -286,9 +286,9 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
   	pFile = NULL;
 	pFile = fopen ("Ranking.txt", "w+");
 	printf("     Ranking: \n");
-	for (i=0;i<linhas+1 &&i<10;i++){ // (linhas++)
+	for (i=0;i<linhas+1 &&i<10;i++){ // (linhas++) 
 		fprintf(pFile, "%s %f\n",player[i].nome,player[i].pontos);
-		printf("%d Lugar: %s %.2f pontos\n",i+1,player[i].nome, player[i].pontos);
+		printf("%d Lugar: %s %.2f pontos\n",i+1,player[i].nome, player[i].pontos); //DUPLO RANKING PRA TESTE - RETIRAR
 	}
 	fclose(pFile);
 	zero:	
