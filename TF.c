@@ -1,3 +1,4 @@
+// TEM TESTE (PRECISA RETIRAR)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -368,11 +369,13 @@ int main (int argc, char *argv[]){
 							sscanf(nome,"%s %f",player[i].nome,&player[i].pontos);
 							i++;
 						}
+						fclose(pFile);
 						printf("      Ranking:\n");
 						for (n=0;n<10 && n<i-1;n++)
 							printf("%d Lugar: %s %.2f pontos\n",n+1,player[n].nome,player[n].pontos);
 					}else
-						printf("Arquivo Rankint.txt nao encontrado\n");
+						printf("Arquivo Ranking.txt nao encontrado\n");
+						
 					break;
             default:
                     printf("Opcao invalida");
