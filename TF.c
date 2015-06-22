@@ -226,7 +226,7 @@ void marcar_bomba(struct celula *tabuleiro, int lado){
 // A pontuação deve ser escrita nesse arquivo em ordem decrescente de pontos (o primeiro colocado é aquele com a maior pontuação)
 // Antes de finalizar o jogo, essa função deve imprimir os 10 melhores jogadores
 void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb){
-	int i,n,u=0,linhas=0,controle=0,j,l=lado;
+	int i,n,u=0,linhas=1,controle=0,j,l=lado;
 	float pont,pct,auxf;
 	char auxc[20], v[20];
 	struct info player[100],aux;
@@ -240,6 +240,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
     pct= (float)u/((lado*lado)-bomb);
 	pont=(float)(lado*lado)*(bomb)*(pct);
     printf("Voce fez %.2f pontos!\n",pont);
+
     if (pont==0){
     	pFile = fopen("Ranking.txt","a+");
     	fprintf(pFile, "%s %f\n",jogador,pont);
@@ -284,13 +285,12 @@ printf("%d\n",controle);
   if (controle == 0){ //caso seja primeira vez
   		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
-		printf("entro if\n");
+		printf("entro if ctrl\n");
   }
 
   	// escrevendo no arquivo
   	pFile = NULL;
 	pFile = fopen ("Ranking.txt", "w+");
-	printf("     Ranking: \n");
 	for (i=0;i<linhas && i<10;i++){ // (linhas++)
 		fprintf(pFile, "%s %f\n",player[i].nome,player[i].pontos);
 		//printf("%d Lugar: %s %.2f pontos\n",i+1,player[i].nome, player[i].pontos); //DUPLO RANKING PRA TESTE - RETIRAR
