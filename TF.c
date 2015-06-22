@@ -242,6 +242,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
     printf("Voce fez %.2f pontos!\n",pont);
 
     if (pont==0){
+        pont+=0.001;
     	pFile = fopen("Ranking.txt","a+");
     	fprintf(pFile, "%s %f\n",jogador,pont);
     	fclose(pFile);
