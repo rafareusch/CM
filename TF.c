@@ -242,7 +242,7 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
     printf("Voce fez %.2f pontos!\n",pont);
 
     if (pont==0){
-        pont+=0.001;
+        pont+=0.00001;
     	pFile = fopen("Ranking.txt","a+");
     	fprintf(pFile, "%s %f\n",jogador,pont);
     	fclose(pFile);
@@ -269,20 +269,21 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
 		i=1;
     	while(j){
 			j = 0;
-			printf("entro while");
-			for(i=1;i<12;i++){
+			printf("i bubble:%d\n",i);
+			for(i=1;i<=linhas;i++){
+				controle = 1;
 				if(player[i-1].pontos < player[i].pontos) {
 					memcpy(&aux, &player[i-1],sizeof(struct info));
 					memcpy(&player[i-1], &player[i],sizeof(struct info));
 					memcpy(&player[i], &aux,sizeof(struct info));
 					j = 1;
-					controle = 1;
 					printf("buuble\n");
     	        }
     	    }
 		}
 printf("%d\n",controle);
 }// fim if
+
   if (controle == 0){ //caso seja primeira vez
   		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
@@ -364,7 +365,7 @@ int main (int argc, char *argv[]){
 	while(1){
 		imprime_tabuleiro(tabuleiro,lado_tabuleiro);
 		printf("Insira uma opcao (a/b/c/s): ");
-		o=getchar();
+		scanf(" %c",&o);
 		switch(o){
 			case 'a':
                     if(jogada(tabuleiro,lado_tabuleiro,num_bombas) == 0){
@@ -415,7 +416,6 @@ int main (int argc, char *argv[]){
                     opcoes();
                     break;
 		}//fim switch
-	fpurge(stdin);
 	}//fim while
 //Aqui as bombas devem ser criadas no tabuleiro e os valores de controle de todas células devem ser calculados
 //Escreva aqui um trecho de código para controle de rodadas do jogo
