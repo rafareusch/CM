@@ -414,7 +414,7 @@ int main (int argc, char *argv[]){
                     opcoes();
                     break;
 		}//fim switch
-	fflush(stdin);
+	fpurge(stdin);
 	}//fim while
 //Aqui as bombas devem ser criadas no tabuleiro e os valores de controle de todas células devem ser calculados
 //Escreva aqui um trecho de código para controle de rodadas do jogo
