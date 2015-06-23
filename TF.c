@@ -1,4 +1,3 @@
-//teste linha 182
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,20 +14,12 @@ struct info{
 	char nome[10];
 	float pontos;
 };
+
+
 void opcoes(){
 	printf("\n	COMANDOS:\n");
 	printf(" a - Abrir posicao no tabuleiro\n b - Marcar/Desmarcar posicao no tabuleiro como bomba\n");
 	printf(" p - Lista pontuacoes\n c - Lista de comandos\n\n");
-}
-
-//Faz a abertura das casas dependendo do seu valor
-void le_vizinho(int x, int y, struct celula *tabuleiro, int lado){
-		if (tabuleiro[x*lado + y].valor > 0)
-			tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';
-		else{
-            tabuleiro[x*lado + y].imprime = ' ';
-            tabuleiro[x*lado + y].abrir = 1;
-		}
 }
 
 
@@ -53,7 +44,8 @@ void gera_bombas(struct celula *tabuleiro, int lado, int num_bombas){
 // Ela recebe por parâmetro a referência para o tabuleiro e o tamanho do lado do tabuleiro
 void imprime_tabuleiro(struct celula *tabuleiro, int lado){
  	int i,n;
-
+ 	
+	// imprime os numeros das casas
  	for (i=0;i<lado;i=i+2){
 		if (i==0)
 			printf("\n    %d",i);
@@ -71,13 +63,15 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
  			else
  			printf("    %d", i);
     printf("\n");
+    
+    //imprime ___
     for(i=0;i<lado;i++)
         if (i==0)
             printf("   __");
         else
             printf("___");
 
-
+	// imprimindo o #
  	printf("\n");
  	for (i=0;i<lado;i++){
  			if (i<10)
@@ -89,7 +83,8 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
 		}
  	printf("\n");
 	}
-
+	
+   // imprime ___
 	 for(i=0;i<lado;i++)
         if (i==0)
             printf("   __");
@@ -105,14 +100,25 @@ void imprime_tabuleiro(struct celula *tabuleiro, int lado){
 void abrir_celula2(struct celula *tabuleiro, int lado, int x, int y){
         int aux_x,aux_y;
 
-        if (tabuleiro[x*lado + y].valor != 0)
-            le_vizinho(x,y,tabuleiro,lado);
+        if (tabuleiro[x*lado + y].valor != 0){
+            if (tabuleiro[x*lado + y].valor > 0)
+				tabuleiro[x*lado + y].imprime = tabuleiro[x*lado + y].valor + '0';
+			else{
+       	    	 tabuleiro[x*lado + y].imprime = ' ';
+        	    tabuleiro[x*lado + y].abrir = 1;
+			}
+		}
         else {
         	for(aux_x=x-1;aux_x<=x+1;aux_x++)
 				for(aux_y=y-1;aux_y<=y+1;aux_y++)
 					if(aux_x < lado && aux_y < lado && aux_x >= 0 && aux_y >= 0)
-						le_vizinho(aux_x,aux_y,tabuleiro,lado);
-        }
+						if (tabuleiro[aux_x*lado + aux_y].valor > 0)
+							tabuleiro[aux_x*lado + aux_y].imprime = tabuleiro[aux_x*lado + aux_y].valor + '0';
+						else{
+    		    	    	tabuleiro[aux_x*lado + aux_y].imprime = ' ';
+	    	    	    	tabuleiro[aux_x*lado + aux_y].abrir = 1;
+						}
+		}
 
 }
 
@@ -158,6 +164,7 @@ int jogada(struct celula *tabuleiro, int lado, int bomb){
 				}
 				printf(" \n ");
 		}
+		printf("\n\n");
 		return 0;
 	}
 	if(x<0 || y<0 || x>=lado || y>=lado){
@@ -179,13 +186,21 @@ int jogada(struct celula *tabuleiro, int lado, int bomb){
         for (n=0;n<lado;n++)
             if (tabuleiro[i*lado + n].imprime != '#')
             	celulas_abertas++;
-	printf("casas abertas %d\n",celulas_abertas);
     if (celulas_abertas == (lado*lado) - bomb){
 		printf("             Voce ganhou!! \n");
 		printf("  Todas as casas foram abertas! \n\n");
-		printf("imprime casa %d %d = %c\n\n",x,y,tabuleiro[i*lado + n].imprime );
-		printf("Valor casa %d %d = %d\n\n",x,y,tabuleiro[i*lado + n].valor );
-		printf("%d\n",celulas_abertas);
+		for (i=0;i<lado;i++){
+			for (n=0; n<lado;n++){
+				if ( tabuleiro[i*lado + n].valor == -1)
+					printf(" * ");
+				else if (tabuleiro[i*lado + n].valor == 0)
+                           printf("   ");
+                     else
+                        printf(" %d ", tabuleiro[i*lado + n].valor);
+			}
+			printf(" \n ");
+		}
+		printf("\n\n");
        return 0;
     }
     else
@@ -259,17 +274,16 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
 				i++;
 		}
 		fclose(pFile);
-		printf("i: %d\n",i);
-		strcpy(player[i].nome, jogador);
-    	player[i].pontos=pont;
+		
+		strcpy(player[i-1].nome, jogador);
+    	player[i-1].pontos=pont;
     	linhas = i;
-        printf("linhas: %d\n",linhas);
+        
 		// reordenando o vetor
 		j=1;
 		i=1;
     	while(j){
 			j = 0;
-			printf("i bubble:%d\n",i);
 			for(i=1;i<=linhas;i++){
 				controle = 1;
 				if(player[i-1].pontos < player[i].pontos) {
@@ -277,17 +291,14 @@ void fim_de_jogo(struct celula *tabuleiro, char jogador[20], int lado, int bomb)
 					memcpy(&player[i-1], &player[i],sizeof(struct info));
 					memcpy(&player[i], &aux,sizeof(struct info));
 					j = 1;
-					printf("buuble\n");
     	        }
     	    }
 		}
-printf("%d\n",controle);
 }// fim if
 
   if (controle == 0){ //caso seja primeira vez
   		strcpy(player[0].nome, jogador);
 		player[0].pontos = pont;
-		printf("entro if ctrl\n");
   }
 
   	// escrevendo no arquivo
